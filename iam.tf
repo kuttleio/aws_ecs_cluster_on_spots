@@ -18,7 +18,7 @@ data "aws_iam_policy_document" "ec2_instance_assume_role_policy" {
 
 resource "aws_iam_role" "ec2_instance_role" {
     assume_role_policy = data.aws_iam_policy_document.ec2_instance_assume_role_policy.json
-    name               = "EcsCluster${var.cluster_name}Ec2InstanceRole"
+    name               = "${var.cluster_name}-ECS-EC2InstanceRole"
     tags               = var.standard_tags
 }
 
@@ -33,7 +33,7 @@ resource "aws_iam_role_policy_attachment" "ssm_core_role" {
 }
 
 resource "aws_iam_instance_profile" "ecs_node" {
-    name = "EcsCluster${var.cluster_name}Ec2InstanceProfile"
+    name = "${var.cluster_name}-ECS-EC2InstanceProfile"
     role = aws_iam_role.ec2_instance_role.name
 }
 
@@ -51,7 +51,7 @@ data "aws_iam_policy_document" "ecs_service_role_policy" {
 
 resource "aws_iam_role" "ecs_service_role" {
     assume_role_policy = data.aws_iam_policy_document.ecs_service_role_policy.json
-    name               = "EcsCluster${var.cluster_name}ServiceRole"
+    name               = "${var.cluster_name}-ECS-ServiceRole"
     tags               = var.standard_tags
 }
 
@@ -72,7 +72,7 @@ data "aws_iam_policy_document" "ecs_task_role_policy" {
 
 resource "aws_iam_role" "ecs_task_role" {
     assume_role_policy = data.aws_iam_policy_document.ecs_task_role_policy.json
-    name               = "EcsCluster${var.cluster_name}DefaultTaskRole"
+    name               = "${var.cluster_name}-ECS-DefaultTaskRole"
     tags               = var.standard_tags
 }
 

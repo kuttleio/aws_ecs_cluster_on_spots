@@ -23,6 +23,16 @@ resource "aws_ecs_cluster" "cluster" {
     create_before_destroy = true
   }
 
+  configuration {
+    execute_command_configuration {
+      logging    = "OVERRIDE"
+      log_configuration {
+        cloud_watch_encryption_enabled = true
+        cloud_watch_log_group_name     = aws_cloudwatch_log_group.cluster_log_group.name
+      }
+    }
+  }  
+
   # https://github.com/terraform-providers/terraform-provider-aws/issues/11409
   # We need to terminate all instances before the cluster can be destroyed.
   # (Terraform would handle this automatically if the autoscaling group depended
@@ -157,7 +167,7 @@ resource "aws_autoscaling_group" "cluster_asg" {
 #    Launch Template
 # -------------------------------------------------------------
 resource "aws_launch_template" "cluster_lt" {
-  name                      = "${var.cluster_name}-launch-template"
+  name                      = "${var.cluster_name}-LT"
   image_id                  = data.aws_ami.amazon_linux_ecs.id
   instance_type             = var.cluster_instance_type
   iam_instance_profile {
