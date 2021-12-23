@@ -161,7 +161,7 @@ resource "aws_launch_template" "cluster_lt" {
   image_id                  = data.aws_ami.amazon_linux_ecs.id
   instance_type             = var.cluster_instance_type
   iam_instance_profile {
-    arn                     = "arn:aws:iam::${var.account}:instance-profile/ecsInstanceRole"
+    arn                     = aws_iam_role.ecs_service_role.arn ## "arn:aws:iam::${var.account}:instance-profile/ecsInstanceRole"
   }
   key_name                  = var.key_name
   user_data                 = base64encode(templatefile("${path.module}/user-data.sh", { cluster_name = var.cluster_name }))
