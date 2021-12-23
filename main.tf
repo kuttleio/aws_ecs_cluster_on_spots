@@ -108,7 +108,7 @@ resource "aws_autoscaling_group" "cluster_asg" {
   health_check_type         = "EC2"
   health_check_grace_period = 300
   termination_policies      = ["DEFAULT"]
-  service_linked_role_arn   = aws_iam_role.ecs_service_role.arn
+  # service_linked_role_arn   = aws_iam_role.ecs_service_role.arn
 
   tag {
     key                 = "AmazonECSManaged"
@@ -171,7 +171,7 @@ resource "aws_launch_template" "cluster_lt" {
   image_id                  = data.aws_ami.amazon_linux_ecs.id
   instance_type             = var.cluster_instance_type
   iam_instance_profile {
-    arn                     = aws_iam_instance_profile.ecs_node.arn ## aws_iam_role.ecs_service_role.arn ## "arn:aws:iam::${var.account}:instance-profile/ecsInstanceRole"
+    name                    = aws_iam_instance_profile.ecs_node.name ## aws_iam_role.ecs_service_role.arn ## "arn:aws:iam::${var.account}:instance-profile/ecsInstanceRole"
   }
   key_name                  = var.key_name
   user_data                 = base64encode(templatefile("${path.module}/user-data.sh", { cluster_name = var.cluster_name }))
