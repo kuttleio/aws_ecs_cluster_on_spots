@@ -1,5 +1,2 @@
-# aws_ecs_bender_spots
-AWS ECS Cluster for Bender app (on Sports)
-Terraform Module - AWS ECS Bender Spots
-
-Got from: https://github.com/emedgene/terraform-cloud-launchpad-modules
+# aws_ecs_cluster_on_spots
+Creates ECS-ECS2 cluster with only spot instances
