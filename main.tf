@@ -209,7 +209,7 @@ resource "aws_launch_template" "cluster_lt" {
 
   network_interfaces {
     subnet_id       = var.ecs_subnet[0]
-    security_groups = [var.cluster_sg]
+    security_groups = var.cluster_sg
   }
 
   tag_specifications {
