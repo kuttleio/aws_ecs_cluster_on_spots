@@ -108,7 +108,7 @@ resource "aws_autoscaling_group" "cluster_asg" {
   health_check_type         = "EC2"
   health_check_grace_period = 300
   termination_policies      = ["DEFAULT"]
-  service_linked_role_arn   = "arn:aws:iam::${var.account}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
+  service_linked_role_arn   = aws_iam_role.ecs_service_role.arn
 
   tag {
     key                 = "AmazonECSManaged"
