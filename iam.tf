@@ -18,8 +18,8 @@ data "aws_iam_policy_document" "ec2_instance_assume_role_policy" {
 
 resource "aws_iam_role" "ec2_instance_role" {
     assume_role_policy = data.aws_iam_policy_document.ec2_instance_assume_role_policy.json
-    name               = "EcsCluster${local.name}Ec2InstanceRole"
-    tags               = local.tags
+    name               = "EcsCluster${var.cluster_name}Ec2InstanceRole"
+    tags               = var.standard_tags
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_instance_role" {
@@ -33,7 +33,7 @@ resource "aws_iam_role_policy_attachment" "ssm_core_role" {
 }
 
 resource "aws_iam_instance_profile" "ecs_node" {
-    name = "EcsCluster${local.name}Ec2InstanceProfile"
+    name = "EcsCluster${var.cluster_name}Ec2InstanceProfile"
     role = aws_iam_role.ec2_instance_role.name
 }
 
@@ -51,8 +51,8 @@ data "aws_iam_policy_document" "ecs_service_role_policy" {
 
 resource "aws_iam_role" "ecs_service_role" {
     assume_role_policy = data.aws_iam_policy_document.ecs_service_role_policy.json
-    name               = "EcsCluster${local.name}ServiceRole"
-    tags               = local.tags
+    name               = "EcsCluster${var.cluster_name}ServiceRole"
+    tags               = var.standard_tags
 }
 
 resource "aws_iam_role_policy_attachment" "service_role" {
@@ -72,13 +72,13 @@ data "aws_iam_policy_document" "ecs_task_role_policy" {
 
 resource "aws_iam_role" "ecs_task_role" {
     assume_role_policy = data.aws_iam_policy_document.ecs_task_role_policy.json
-    name               = "EcsCluster${local.name}DefaultTaskRole"
-    tags               = local.tags
+    name               = "EcsCluster${var.cluster_name}DefaultTaskRole"
+    tags               = var.standard_tags
 }
 
 resource "aws_iam_role_policy_attachment" "default_task_role" {
-    ole       = aws_iam_role.ecs_task_role.name
-    olicy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+    role       = aws_iam_role.ecs_task_role.name
+    policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 data "aws_iam_policy_document" "allow_create_log_groups" {
