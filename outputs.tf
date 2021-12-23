@@ -5,7 +5,3 @@ output "cluster_name" {
 output "cluster_capacity_provider" {
   value = aws_ecs_capacity_provider.cluster_cp.name
 }
-
-output "cluster_cloudwatch_group" {
-  value = aws_cloudwatch_log_group.ecs_log_group_bender.name
-}

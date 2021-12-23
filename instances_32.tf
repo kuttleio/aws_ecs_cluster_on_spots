@@ -1,4 +1,4 @@
-variable "cluster_instance_type_1" {
+variable "cluster_instance_type" {
     default = "m5.2xlarge"
 }
 variable "cluster_instance_type_2" {
