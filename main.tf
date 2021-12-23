@@ -124,7 +124,7 @@ resource "aws_autoscaling_group" "cluster_asg" {
       }
       ## TODO: Refactor
       override {
-        instance_type = var.cluster_instance_type_1
+        instance_type = var.cluster_instance_type
       }
       override {
         instance_type = var.cluster_instance_type_2
