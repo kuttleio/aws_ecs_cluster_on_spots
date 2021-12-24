@@ -5,7 +5,7 @@
 ## TODO:
 0. ~~Add container insights (bool)~~
 1. ~~Add dynamic instance types~~
-2. Add dynamic volumes
+2. ~~Add dynamic volumes~~
 3. Add Queue management with SQS
 4. Make ASG scale based on a number of messages in the Q
 5. Add custom notifications to Slack: SQS + SNS + Lambda
