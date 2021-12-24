@@ -7,6 +7,12 @@ variable "cluster_sg" {}
 variable "cluster_name" {}
 variable "standard_tags" {}
 
+variable "container_insights" {
+  type        = bool
+  default     = false
+  description = "Controls if ECS Cluster has container insights enabled"
+}
+
 variable "instance_types" {
   description = "ECS node instance types. Maps of pairs like `type = weight`. Where weight gives the instance type a proportional weight to other instance types."
   type        = map(any)
