@@ -9,8 +9,8 @@ variable "standard_tags" {}
 
 variable "container_insights" {
   type        = bool
-  default     = "false"
-  description = "ContainerInsights"
+  default     = false
+  description = "Controls if ECS Cluster has container insights enabled"
 }
 
 variable "instance_types" {

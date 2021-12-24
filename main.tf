@@ -8,7 +8,7 @@ resource "aws_ecs_cluster" "cluster" {
 
   setting {
     name  = "containerInsights"
-    var.container_insights == true ? value = "enabled" : value = "disabled" ## value = "enabled"
+    value = var.container_insights ? "enabled" : "disabled"
   }
 
   default_capacity_provider_strategy {
