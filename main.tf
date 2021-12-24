@@ -1,12 +1,3 @@
-### This module creates ONE ECS (EC2) cluster with spots. You can specify instance types ###############
-
-# -------------------------------------------------------------
-#   TODO:
-#   1. Add Queue management with SQS
-#   2. Make ASG scale based on a number of messages in the Q
-#   3. Add notifications to Slack: SQS + SNS + Lambda
-# -------------------------------------------------------------
-
 # -------------------------------------------------------------
 #    ECS Cluster
 # -------------------------------------------------------------
