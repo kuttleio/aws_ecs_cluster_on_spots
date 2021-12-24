@@ -126,8 +126,8 @@ resource "aws_autoscaling_group" "cluster_asg" {
       dynamic "override" {
         for_each = var.instance_types
         content {
-          instance_type     = override.key
-          weight_capacity   = override.value
+          instance_type       = override.key
+          weighted_capacity   = override.value
         }
       }
     }
@@ -142,7 +142,7 @@ resource "aws_autoscaling_group" "cluster_asg" {
 resource "aws_launch_template" "cluster_lt" {
   name                      = "${var.cluster_name}-LT"
   image_id                  = data.aws_ami.amazon_linux_ecs.id
-  instance_type             = var.cluster_instance_type
+  instance_type             = "t3a.small"
   iam_instance_profile {
     name                    = aws_iam_instance_profile.ecs_node.name ## aws_iam_role.ecs_service_role.arn ## "arn:aws:iam::${var.account}:instance-profile/ecsInstanceRole"
   }
