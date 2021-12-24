@@ -154,46 +154,29 @@ resource "aws_launch_template" "cluster_lt" {
   key_name                  = var.key_name
   user_data                 = base64encode(templatefile("${path.module}/user-data.sh", { cluster_name = var.cluster_name }))
 
-  ## TODO: Refactor
-  block_device_mappings {
-    device_name             = var.cluster_block_device_name_1
-    ebs {
-      volume_size           = var.ebs_volume_size
-      volume_type           = var.ebs_volume_type
-      encrypted             = var.ebs_encrypted
-      delete_on_termination = var.ebs_delete_on_termination
-    }
-  }
+  # ## TODO: Refactor
+  # block_device_mappings {
+  #   device_name             = var.cluster_block_device_name_1
+  #   ebs {
+  #     volume_size           = var.ebs_volume_size
+  #     volume_type           = var.ebs_volume_type
+  #     encrypted             = var.ebs_encrypted
+  #     delete_on_termination = var.ebs_delete_on_termination
+  #   }
+  # }
 
-  block_device_mappings {
-    device_name             = var.cluster_block_device_name_2
-    ebs {
-      volume_size           = var.ebs_volume_size
-      volume_type           = var.ebs_volume_type
-      encrypted             = var.ebs_encrypted
-      delete_on_termination = var.ebs_delete_on_termination
+  dynamic "block_device_mappings" {
+    for_each = var.ebs_disks
+    content {
+      device_name = block_device_mappings.key
+      ebs {
+        volume_size           = block_device_mappings.value
+        volume_type           = "gp2"
+        encrypted             = true
+        delete_on_termination = true
+      }
     }
-  }
-
-  block_device_mappings {
-    device_name             = var.cluster_block_device_name_3
-    ebs {
-      volume_size           = var.ebs_volume_size
-      volume_type           = var.ebs_volume_type
-      encrypted             = var.ebs_encrypted
-      delete_on_termination = var.ebs_delete_on_termination
-    }
-  }
-
-  block_device_mappings {
-    device_name             = var.cluster_block_device_name_4
-    ebs {
-      volume_size           = var.ebs_volume_size
-      volume_type           = var.ebs_volume_type
-      encrypted             = var.ebs_encrypted
-      delete_on_termination = var.ebs_delete_on_termination
-    }
-  }
+  }  
 
   network_interfaces {
     subnet_id       = var.ecs_subnet[0]

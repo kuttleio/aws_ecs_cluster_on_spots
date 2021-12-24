@@ -21,6 +21,12 @@ variable "instance_types" {
   }
 }
 
+variable "ebs_disks" {
+  description = "A list of additional EBS disks"
+  type        = map(string)
+  default     = {}
+}
+
 variable "ebs_delete_on_termination" {
   default = true
 }
