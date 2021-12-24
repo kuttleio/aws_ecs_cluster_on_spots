@@ -123,30 +123,12 @@ resource "aws_autoscaling_group" "cluster_asg" {
         launch_template_id = aws_launch_template.cluster_lt.id
         version            = "$Latest"
       }
-      ## TODO: Refactor
-      override {
-        instance_type = var.cluster_instance_type
-      }
-      override {
-        instance_type = var.cluster_instance_type_2
-      }
-      override {
-        instance_type = var.cluster_instance_type_3
-      }
-      override {
-        instance_type = var.cluster_instance_type_4
-      }
-      override {
-        instance_type = var.cluster_instance_type_5
-      }
-      override {
-        instance_type = var.cluster_instance_type_6
-      }
-      override {
-        instance_type = var.cluster_instance_type_7
-      }
-      override {
-        instance_type = var.cluster_instance_type_8
+      dynamic "override" {
+        for_each = var.instance_types
+        content {
+          instance_type     = override.key
+          weight_capacity   = override.value
+        }
       }
     }
   }
