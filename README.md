@@ -3,6 +3,7 @@
 ## Creates One ECS-EC2 cluster with spots. Can specify instance types
 
 ## TODO:
+0. Add container insights (bool)
 1. Add dynamic instance types
 2. Add dynamic volumes
 3. Add Queue management with SQS
