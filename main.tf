@@ -142,7 +142,7 @@ resource "aws_autoscaling_group" "cluster_asg" {
 resource "aws_launch_template" "cluster_lt" {
   name                      = "${var.cluster_name}-LT"
   image_id                  = data.aws_ami.amazon_linux_ecs.id
-  instance_type             = var.cluster_instance_type
+  instance_type             = var.instance_types ## var.cluster_instance_type
   iam_instance_profile {
     name                    = aws_iam_instance_profile.ecs_node.name ## aws_iam_role.ecs_service_role.arn ## "arn:aws:iam::${var.account}:instance-profile/ecsInstanceRole"
   }
