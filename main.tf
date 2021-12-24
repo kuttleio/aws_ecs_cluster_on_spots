@@ -6,6 +6,11 @@ resource "aws_ecs_cluster" "cluster" {
   tags               = merge(var.standard_tags, tomap({ Name = var.cluster_name }))
   capacity_providers = [aws_ecs_capacity_provider.cluster_cp.name]
 
+  setting {
+    name  = "containerInsights"
+    var.container_insights == true ? value = "enabled" : value = "disabled" ## value = "enabled"
+  }
+
   default_capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.cluster_cp.name
   }
@@ -22,7 +27,7 @@ resource "aws_ecs_cluster" "cluster" {
         cloud_watch_log_group_name     = aws_cloudwatch_log_group.cluster_log_group.name
       }
     }
-  }  
+  }
 
   # https://github.com/terraform-providers/terraform-provider-aws/issues/11409
   # We need to terminate all instances before the cluster can be destroyed.
