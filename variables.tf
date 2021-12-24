@@ -30,27 +30,11 @@ variable "ebs_disks" {
 variable "ebs_delete_on_termination" {
   default = true
 }
-variable "ebs_volume_size" {
-  default = 200
-}
 variable "ebs_volume_type" {
   default = "gp2"
 }
 variable "ebs_encrypted" {
   default = true
-}
-
-variable "cluster_block_device_name_1" {
-  default = "/dev/sde"
-}
-variable "cluster_block_device_name_2" {
-  default = "/dev/sdd"
-}
-variable "cluster_block_device_name_3" {
-  default = "/dev/sdc"
-}
-variable "cluster_block_device_name_4" {
-  default = "/dev/xvda"
 }
 
 variable "cluster_min_size" {
