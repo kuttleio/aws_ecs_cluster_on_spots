@@ -21,58 +21,14 @@ resource "aws_ecs_cluster" "cluster" {
 
   configuration {
     execute_command_configuration {
-      logging    = "OVERRIDE"
+      logging = "OVERRIDE"
       log_configuration {
         cloud_watch_encryption_enabled = true
         cloud_watch_log_group_name     = aws_cloudwatch_log_group.cluster_log_group.name
       }
     }
   }
-
-  # https://github.com/terraform-providers/terraform-provider-aws/issues/11409
-  # We need to terminate all instances before the cluster can be destroyed.
-  # (Terraform would handle this automatically if the autoscaling group depended
-  # on the cluster, but we need to have the dependency in the reverse
-  # direction due to the capacity_providers field above).
-  provisioner "local-exec" {
-    when    = destroy
-
-    command = <<CMD
-      # Get the list of capacity providers associated with this cluster
-      CAP_PROVS="$(aws ecs describe-clusters --clusters "${self.arn}" \
-        --query 'clusters[*].capacityProviders[*]' --output text)"
-
-      # Now get the list of autoscaling groups from those capacity providers
-      ASG_ARNS="$(aws ecs describe-capacity-providers \
-        --capacity-providers "$CAP_PROVS" \
-        --query 'capacityProviders[*].autoScalingGroupProvider.autoScalingGroupArn' \
-        --output text)"
-
-      if [ -n "$ASG_ARNS" ] && [ "$ASG_ARNS" != "None" ]
-      then
-        for ASG_ARN in $ASG_ARNS
-        do
-          ASG_NAME=$(echo $ASG_ARN | cut -d/ -f2-)
-
-          # Set the autoscaling group size to zero
-          aws autoscaling update-auto-scaling-group \
-            --auto-scaling-group-name "$ASG_NAME" \
-            --min-size 0 --max-size 0 --desired-capacity 0
-
-          # Remove scale-in protection from all instances in the asg
-          INSTANCES="$(aws autoscaling describe-auto-scaling-groups \
-            --auto-scaling-group-names "$ASG_NAME" \
-            --query 'AutoScalingGroups[*].Instances[*].InstanceId' \
-            --output text)"
-          aws autoscaling set-instance-protection --instance-ids $INSTANCES \
-            --auto-scaling-group-name "$ASG_NAME" \
-            --no-protected-from-scale-in
-        done
-      fi
-CMD
-  }
 }
-
 
 
 # -------------------------------------------------------------
@@ -80,9 +36,9 @@ CMD
 # -------------------------------------------------------------
 resource "aws_autoscaling_group" "cluster_asg" {
   name                      = "${var.cluster_name}-ASG"
-  max_size                  = var.cluster_max_size
   min_size                  = var.cluster_min_size
   desired_capacity          = var.cluster_desired_capacity
+  max_size                  = var.cluster_max_size  
   protect_from_scale_in     = true
   vpc_zone_identifier       = var.ecs_subnet.*
   default_cooldown          = 300
@@ -104,9 +60,9 @@ resource "aws_autoscaling_group" "cluster_asg" {
 
   mixed_instances_policy {
     instances_distribution {
-      on_demand_base_capacity  = 0
-      spot_allocation_strategy = "lowest-price"
-      spot_instance_pools      = 5
+      on_demand_base_capacity                  = 0
+      on_demand_percentage_above_base_capacity = 25
+      spot_allocation_strategy                 = "capacity-optimized"
     }
     launch_template {
       launch_template_specification {
@@ -125,7 +81,6 @@ resource "aws_autoscaling_group" "cluster_asg" {
 }
 
 
-
 # -------------------------------------------------------------
 #    Launch Template
 # -------------------------------------------------------------
@@ -133,11 +88,12 @@ resource "aws_launch_template" "cluster_lt" {
   name                      = "${var.cluster_name}-LT"
   image_id                  = data.aws_ami.amazon_linux_ecs.id
   instance_type             = "t3a.small"
-  iam_instance_profile {
-    name                    = aws_iam_instance_profile.ecs_node.name ## aws_iam_role.ecs_service_role.arn ## "arn:aws:iam::${var.account}:instance-profile/ecsInstanceRole"
-  }
   key_name                  = var.key_name
   user_data                 = base64encode(templatefile("${path.module}/user-data.sh", { cluster_name = var.cluster_name }))
+  
+  iam_instance_profile {
+    name                    = aws_iam_instance_profile.ecs_node.name
+  }
 
   dynamic "block_device_mappings" {
     for_each = var.ebs_disks
@@ -169,7 +125,6 @@ resource "aws_launch_template" "cluster_lt" {
 }
 
 
-
 # -------------------------------------------------------------
 #    Capacity Providers
 # -------------------------------------------------------------
@@ -187,4 +142,13 @@ resource "aws_ecs_capacity_provider" "cluster_cp" {
       target_capacity              = 100
     }
   }
+}
+
+
+# -------------------------------------------------------------
+#    CloudWatch Log Group
+# -------------------------------------------------------------
+resource "aws_cloudwatch_log_group" "cluster_log_group" {
+    name = "/ecs/${var.cluster_name}"
+    tags = var.standard_tags
 }
