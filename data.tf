@@ -12,7 +12,3 @@ data "aws_ami" "amazon_linux_ecs" {
         values = ["amazon"]
     }
 }
-
-# data "aws_efs_file_system" "by_id" {
-#     file_system_id = var.efs_id[0]
-# }
